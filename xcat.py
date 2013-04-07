@@ -39,9 +39,13 @@ def _parse_arguments():
         return value.encode('ascii')
 
     def counter(value):
-        start = int(value, 0)
+        if ',' not in value:
+            value += ',1'
+        start, step = value.split(',', 2)
+        start = int(start, 0)
+        step = int(step, 0)
         for i in range(0x100):
-            yield (start + i) & 0xff
+            yield (start + i * step) & 0xff
 
     key_option.add_argument(
         '-f',
@@ -74,9 +78,9 @@ def _parse_arguments():
     key_option.add_argument(
         '-c',
         dest='key',
-        metavar='START',
+        metavar='START[,STEP]',
         type=counter,
-        help='create 256-byte key by counting up from START',
+        help='create 256-byte key by counting from START',
         )
 
     parser.add_argument(
